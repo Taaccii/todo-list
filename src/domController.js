@@ -1,4 +1,3 @@
-import { ManifestPlugin, NoEmitOnErrorsPlugin } from "webpack";
 import { projectManager } from "./projectManager";
 import { storageManager } from "./storageManager";
 
@@ -129,7 +128,7 @@ const createDomController = () => {
 
     titleEl.textContent = activeProject.name;
 
-    if(activeProject.todos.lenght === 0) {
+    if(activeProject.todos.length === 0) {
       const emptyMsg = document.createElement('p');
       emptyMsg.classList.add('empty-msg');
       emptyMsg.textContent = 'No tasks in this project.';
@@ -164,7 +163,52 @@ const createDomController = () => {
 
       const extraInfo = document.createElement('div');
       extraInfo.classList.add('todo-extra-info');
-    })
 
-  }
-}
+      const deleteBtn = document.createElement('button');
+      deleteBtn.classList.add('btn-delete-todo');
+      deleteBtn.textContent = 'x';
+      deleteBtn.setAttribute('aria-label', 'Delete Task');
+      deleteBtn.addEventListener('click', () => {
+        activeProject.removeTodo(index);
+        updateStateAndRender();
+      });
+
+      extraInfo.appendChild(deleteBtn);
+      card.append(mainInfo, extraInfo);
+      todoListEl.appendChild(card);
+    });
+  };
+
+  const render = () => {
+    renderProjects();
+    renderTodos();
+  };
+
+  const bindEvents = () => {
+    const addProjectForm = document.querySelector('#add-project-form');
+    const newProjectInput = document.querySelector('#new-project-input');
+
+    if (addProjectForm) {
+      addProjectForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const name = newProjectInput.value.trim();
+        if (name) {
+          projectManager.addProject(name);
+          newProjectInput.value = '';
+          updateStateAndRender();
+        }
+      });
+    }
+  };
+
+  return {
+    init() {
+      buildBaseLayout();
+      bindEvents();
+      render();
+    },
+    render
+  };
+};
+
+export const domController = createDomController();
