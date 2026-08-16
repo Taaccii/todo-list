@@ -1,5 +1,7 @@
+import { format, parseISO } from 'date-fns';
 import { projectManager } from "./projectManager";
 import { storageManager } from "./storageManager";
+import { createTodoFormModal } from './todoFormModal';
 
 const createDomController = () => {
   let appContainer;
@@ -52,16 +54,22 @@ const createDomController = () => {
     activeProjectTitle.id = 'active-project-title';
     activeProjectTitle.textContent = 'Select project';
 
-    mainHeader.appendChild(activeProjectTitle);
+    const addTodoBtn = document.createElement('button');
+    addTodoBtn.id = 'btn-open-todo-dialog';
+    addTodoBtn.classList.add('btn-add-task');
+    addTodoBtn.textContent = '+ New Task';
+
+    mainHeader.append(activeProjectTitle, addTodoBtn);
 
     const todoListSection = document.createElement('section');
     todoListSection.id = 'todo-list';
     todoListSection.classList.add('todo-list');
+    
+    const todoDialog = createTodoFormModal();
 
     mainContent.append(mainHeader, todoListSection);
-
     layoutContainer.append(sidebar, mainContent);
-    appContainer.appendChild(layoutContainer);
+    appContainer.append(layoutContainer, todoDialog);
 
   };
 
@@ -138,7 +146,8 @@ const createDomController = () => {
 
     activeProject.todos.forEach((todo, index) => {
       const card = document.createElement('div');
-      card.classList.add('todo-card');
+      const priority = todo.priority || 'medium';
+      card.classList.add('todo-card', `priority-${priority}`);
       if (todo.completed) {
         card.classList.add('completed');
       }
@@ -164,6 +173,19 @@ const createDomController = () => {
       const extraInfo = document.createElement('div');
       extraInfo.classList.add('todo-extra-info');
 
+      if (todo.dueDate) {
+        const dateSpan = document.createElement('span');
+        dateSpan.classList.add('todo-date');
+
+        const parsedDate = parseISO(todo.dueDate);
+        dateSpan.textContent = format(parsedDate, 'dd MMM yyyy');
+        extraInfo.appendChild(dateSpan);
+      }
+
+      const priorityBadge = document.createElement('span');
+      priorityBadge.classList.add('priority-badge', `badge-${priority}`);
+      priorityBadge.textContent = priority.toUpperCase();
+
       const deleteBtn = document.createElement('button');
       deleteBtn.classList.add('btn-delete-todo');
       deleteBtn.textContent = 'x';
@@ -173,7 +195,7 @@ const createDomController = () => {
         updateStateAndRender();
       });
 
-      extraInfo.appendChild(deleteBtn);
+      extraInfo.append(priorityBadge, deleteBtn);
       card.append(mainInfo, extraInfo);
       todoListEl.appendChild(card);
     });
@@ -196,6 +218,44 @@ const createDomController = () => {
           projectManager.addProject(name);
           newProjectInput.value = '';
           updateStateAndRender();
+        }
+      });
+    }
+
+    const todoDialog = document.querySelector('#todo-dialog');
+    const openDialogBtn = document.querySelector('#btn-open-todo-dialog');
+    const cancelDialogBtn = document.querySelector('#btn-cancel-todo');
+    const todoForm = document.querySelector('#todo-form');
+
+    if (openDialogBtn && todoDialog) {
+      openDialogBtn.addEventListener('click', () => {
+        todoForm.reset()
+        todoDialog.showModal();
+      });
+    }
+
+    if (cancelDialogBtn && todoDialog) {
+      cancelDialogBtn.addEventListener('click', () => {
+        todoDialog.close();
+      });
+    }
+
+    if (todoForm) {
+      todoForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        const activeProject = projectManager.activeProject;
+        if (!activeProject) return;
+
+        const title = document.querySelector('#todo-title').value.trim();
+        const description = document.querySelector('#todo-description').value.trim();
+        const dueDate = document.querySelector('#todo-due-date').value;
+        const priority = document.querySelector('#todo-priority').value;
+
+        if (title) {
+          activeProject.addTodo(title, description, dueDate, priority);
+          updateStateAndRender();
+          todoDialog.close();
         }
       });
     }
