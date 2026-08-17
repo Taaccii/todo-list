@@ -1,3 +1,5 @@
+@import "@phosphor-icons/web/regular";
+
 :root {
   --bg-primary: #f9fafb;
   --bg-surface: #ffffff;
@@ -199,16 +201,25 @@ p, h1, h2, h3, h4, h5, h6 {
 
 .todo-card {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.85rem 1.25rem;
+  flex-direction: column;
+  padding: 0;
   background-color: var(--bg-surface);
   border-radius: var(--border-radius);
   border-left: 5px solid transparent;
   box-shadow: var(--shadow-sm);
-  transition: border-left-color 0.2s ease, opacity 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+  user-select: none;
+  overflow: hidden;
+  transition: background-color 0.2s ease, border-left-color 0.2s ease, box-shadow 0.2s ease;
 }
 
+.todo-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.85rem 1.25rem;
+  width: 100%;
+}
 .todo-card:hover {
   box-shadow: var(--shadow-md);
 }
@@ -270,6 +281,45 @@ p, h1, h2, h3, h4, h5, h6 {
   padding: 0.2rem 0.55rem;
   border-radius: 4px;
   letter-spacing: 0.03em;
+}
+
+
+.todo-details {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.25s ease-out, opacity 0.2s ease-out, padding 0.25s ease-out;
+  padding: 0 1.25rem;
+  background-color: #f9fafb;
+}
+
+.todo-card.expanded .todo-details {
+  max-height: 250px;
+  opacity: 1;
+  padding: 0.85rem 1.25rem;
+  border-top: 1px solid var(--secondary-bg);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.chevron-icon {
+  font-size: 1.2rem;
+  display: inline-block;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.todo-card.expanded .chevron-icon {
+  transform: rotate(90deg);
+}
+
+.btn-edit-todo {
+  align-self: flex-end;
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  padding: 4px 12px;
+  border-radius: 4px;
+  cursor: pointer;
 }
 
 .badge-high {

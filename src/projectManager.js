@@ -1,16 +1,19 @@
 import { createProject } from "./project";
 
 const createProjectManager = ({ initialProjects = []} = {}) => {
-  const projects = initialProjects.map(projectData =>
-    projectData.addTodo ? projectData : createProject(projectData) 
-  );
-
-  let activeProject = projects.length > 0 ? projects[0] : null;
+  let projects = [];
+  let activeProject = null;
 
   return {
     
     get projects() { return [...projects]; },
     get activeProject() { return activeProject; },
+
+    loadProjects(projectsData) {
+      if (!Array.isArray(projectsData)) return;
+      projects = projectsData.map(pData => createProject(pData));
+      activeProject = projects.length > 0 ? projects[0] : null;
+    },
 
     setActiveProject(index) {
       if (index >= 0 && index < projects.length) {

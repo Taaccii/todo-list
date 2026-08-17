@@ -96,5 +96,54 @@ export const createTodoFormModal = () => {
 
   todoDialog.appendChild(todoForm);
 
-  return todoDialog;
+  let onSubmitCallback = null;
+  let editingIndex = null;
+
+  cancelBtn.addEventListener('click', () => {
+    todoDialog.close();
+  });
+
+  todoForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const formData = {
+      title : titleInput.value.trim(),
+      description: descTextArea.value.trim(),
+      dueDate: dateInput.value,
+      priority: prioritySelect.value,
+    };
+
+    if (formData.title && onSubmitCallback) {
+      onSubmitCallback(formData, editingIndex);
+      todoDialog.close();
+    }
+  });
+
+  return {
+    element: todoDialog,
+
+    openForCreate() {
+      editingIndex = null;
+      todoForm.reset();
+      dialogTitle.textContent = 'Add New Task';
+      todoDialog.showModal();
+    },
+
+    openForEdit(todo, index) {
+      editingIndex = index;
+      dialogTitle.textContent = 'Edit Task';
+      titleInput.value = todo.title || '';
+      descTextArea.value = todo.description || '';
+      dateInput.value = todo.dueDate || '';
+      prioritySelect.value = todo.priority || 'medium';
+      todoDialog.showModal();
+    },
+
+    onSubmit(callback) {
+      onSubmitCallback = callback;
+    },
+
+    close() {
+      todoDialog.close();
+    }
+  };
 };

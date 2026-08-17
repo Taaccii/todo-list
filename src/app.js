@@ -1,9 +1,14 @@
 import './style.css';
 import { storageManager } from "./storageManager";
 import { projectManager } from "./projectManager";
+import { domController } from './domController';
 
 const initApp = () => {
   const saveData = storageManager.load();
+
+  if (saveData && saveData.projects) {
+    projectManager.loadProjects(saveData.projects);
+  }
 
   if (saveData && saveData.activeProjectName) {
     const activeIndex = projectManager.projects.findIndex(
@@ -14,11 +19,7 @@ const initApp = () => {
     }
   }
 
-  if (projectManager.projects.length === 0) {
-    projectManager.addProject('Default Project');
-    storageManager.save(projectManager.toJSON());
-  }
-
+  domController.init();
 };
 
 document.addEventListener('DOMContentLoaded', initApp);

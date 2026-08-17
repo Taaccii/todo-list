@@ -3,8 +3,10 @@ import { projectManager } from "./projectManager";
 import { storageManager } from "./storageManager";
 import { createTodoFormModal } from './todoFormModal';
 
+
 const createDomController = () => {
   let appContainer;
+  const todoModalManager = createTodoFormModal();
 
   const buildBaseLayout = () => {
     appContainer = document.querySelector('#app');
@@ -64,13 +66,10 @@ const createDomController = () => {
     const todoListSection = document.createElement('section');
     todoListSection.id = 'todo-list';
     todoListSection.classList.add('todo-list');
-    
-    const todoDialog = createTodoFormModal();
 
     mainContent.append(mainHeader, todoListSection);
     layoutContainer.append(sidebar, mainContent);
-    appContainer.append(layoutContainer, todoDialog);
-
+    appContainer.append(layoutContainer, todoModalManager.element);
   };
 
   const updateStateAndRender = () => {
@@ -152,6 +151,9 @@ const createDomController = () => {
         card.classList.add('completed');
       }
 
+      const cardHeader = document.createElement('div');
+      cardHeader.classList.add('todo-card-header');
+
       const mainInfo = document.createElement('div');
       mainInfo.classList.add('todo-main-info');
 
@@ -159,6 +161,7 @@ const createDomController = () => {
       checkbox.type = 'checkbox';
       checkbox.classList.add('todo-check');
       checkbox.checked = todo.completed;
+      checkbox.addEventListener('click', (e) => e.stopPropagation());
       checkbox.addEventListener('change', () => {
         todo.toggleComplete();
         updateStateAndRender();
@@ -172,6 +175,9 @@ const createDomController = () => {
 
       const extraInfo = document.createElement('div');
       extraInfo.classList.add('todo-extra-info');
+
+      const chevronIcon = document.createElement('i');
+      chevronIcon.classList.add('ph', 'ph-caret-right', 'chevron-icon');
 
       if (todo.dueDate) {
         const dateSpan = document.createElement('span');
@@ -190,13 +196,42 @@ const createDomController = () => {
       deleteBtn.classList.add('btn-delete-todo');
       deleteBtn.textContent = 'x';
       deleteBtn.setAttribute('aria-label', 'Delete Task');
-      deleteBtn.addEventListener('click', () => {
+      deleteBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
         activeProject.removeTodo(index);
         updateStateAndRender();
       });
 
-      extraInfo.append(priorityBadge, deleteBtn);
-      card.append(mainInfo, extraInfo);
+      extraInfo.append(priorityBadge, deleteBtn, chevronIcon);
+      cardHeader.append(mainInfo, extraInfo);
+      
+      const detailSection = document.createElement('div');
+      detailSection.classList.add('todo-details');
+
+      if (todo.description) {
+        const descP = document.createElement('p');
+        descP.classList.add('todo-description-text');
+        descP.textContent = todo.description;
+        detailSection.appendChild(descP);
+      }
+
+      const editBtn = document.createElement('button');
+      editBtn.type = 'button';
+      editBtn.classList.add('btn-edit-todo');
+      editBtn.textContent = 'Edit';
+
+      editBtn.addEventListener('click', (e) => {
+        e.stopImmediatePropagation();
+        todoModalManager.openForEdit(todo, index);
+      });
+
+      detailSection.appendChild(editBtn);
+
+      card.addEventListener('click', () => {
+        card.classList.toggle('expanded');
+      });
+
+      card.append(cardHeader, detailSection);
       todoListEl.appendChild(card);
     });
   };
@@ -222,43 +257,30 @@ const createDomController = () => {
       });
     }
 
-    const todoDialog = document.querySelector('#todo-dialog');
     const openDialogBtn = document.querySelector('#btn-open-todo-dialog');
-    const cancelDialogBtn = document.querySelector('#btn-cancel-todo');
-    const todoForm = document.querySelector('#todo-form');
 
-    if (openDialogBtn && todoDialog) {
+    if (openDialogBtn) {
       openDialogBtn.addEventListener('click', () => {
-        todoForm.reset()
-        todoDialog.showModal();
+        todoModalManager.openForCreate();
       });
     }
 
-    if (cancelDialogBtn && todoDialog) {
-      cancelDialogBtn.addEventListener('click', () => {
-        todoDialog.close();
-      });
-    }
+    todoModalManager.onSubmit((formData, editingIndex) => {
+      const activeProject = projectManager.activeProject;
+      if (!activeProject) return;
 
-    if (todoForm) {
-      todoForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-
-        const activeProject = projectManager.activeProject;
-        if (!activeProject) return;
-
-        const title = document.querySelector('#todo-title').value.trim();
-        const description = document.querySelector('#todo-description').value.trim();
-        const dueDate = document.querySelector('#todo-due-date').value;
-        const priority = document.querySelector('#todo-priority').value;
-
-        if (title) {
-          activeProject.addTodo(title, description, dueDate, priority);
-          updateStateAndRender();
-          todoDialog.close();
+      if (editingIndex !== null) {
+        const todoToEdit = activeProject.getTodo(editingIndex);
+        if (todoToEdit) {
+          todoToEdit.updateDetails(formData);
         }
-      });
-    }
+      } else {
+        activeProject.addTodo(formData);
+      }
+
+      updateStateAndRender();
+    });
+    
   };
 
   return {

@@ -28,6 +28,7 @@
     "webpack-dev-server": "^6.0.0"
   },
   "dependencies": {
+    "@phosphor-icons/web": "^2.1.2",
     "date-fns": "^4.4.0"
   }
 }

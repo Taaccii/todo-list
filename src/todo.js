@@ -3,11 +3,11 @@ export const createTodo = ({ title, description, dueDate, priority = 'low', note
   let isCompleted = completed;
 
   return {
-    get title() { return title; },
-    get description() { return description; },
-    get dueDate() { return dueDate; },
-    get priority() { return priority; },
-    get notes() { return notes; },
+    get title() { return details.title; },
+    get description() { return details.description; },
+    get dueDate() { return details.dueDate; },
+    get priority() { return details.priority; },
+    get notes() { return details.notes; },
     get completed() { return isCompleted; },
 
     toggleComplete() {
