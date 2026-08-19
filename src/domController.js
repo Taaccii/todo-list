@@ -46,6 +46,32 @@ const createThemeToggle = () => {
   return toggleBtn;
 };
 
+const createFooter = () => {
+  const footer = document.createElement('footer');
+  footer.className = 'app-footer';
+
+  const p = document.createElement('p');
+  p.append('Made with ❤️ by ');
+
+  const link = document.createElement('a');
+  link.href = 'https://github.com/Taaccii';
+  link.target = '_blank';
+  link.rel = 'noopener noreferrer';
+  link.textContent = 'Taaccii';
+
+  const icon = document.createElement('i');
+  icon.className = 'ph ph-github-logo';
+  link.appendChild(icon);
+
+  const yearSpan = document.createElement('span');
+  yearSpan.textContent = ` © ${new Date().getFullYear()}`;
+
+  p.append(link, yearSpan);
+  footer.appendChild(p);
+
+  return footer;
+};
+
 const createDomController = () => {
   let appContainer;
   let layoutContainer;
@@ -141,7 +167,9 @@ const createDomController = () => {
     todoListSection.id = 'todo-list';
     todoListSection.classList.add('todo-list');
 
-    mainContent.append(mainHeader, todoListSection);
+    const footer = createFooter();
+    
+    mainContent.append(mainHeader, todoListSection, footer);
     layoutContainer.append(sidebar, mainContent);
     appContainer.append(
       layoutContainer, 

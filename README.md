@@ -10,6 +10,7 @@
 
 ![Todo List](./todo-list-preview.png)
 
+![Todo List](./todo-list-preview2.png)
 ---
 
 ## 🔗 Live Demo
