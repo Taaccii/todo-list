@@ -227,10 +227,13 @@ button {
   margin-top: auto;
   padding-top: 0.85rem;
   border-top: 1px solid var(--border-color);
+  width: 100%;
 }
 
 .inline-form input {
   flex: 1;
+  min-width: 0;
+  width: 100%;
   padding: 0.4rem 0.6rem;
   border: 1px solid var(--border-color);
   border-radius: var(--border-radius-sm);
