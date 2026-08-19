@@ -177,9 +177,12 @@ const createDomController = () => {
 
       const deleteBtn = document.createElement('button');
       deleteBtn.classList.add('btn-delete-project');
-      deleteBtn.textContent = 'x';
       deleteBtn.setAttribute('aria-label', `Delete Project ${project.name}`);
       deleteBtn.dataset.action = 'delete';
+
+      const deleteIcon = document.createElement('i');
+      deleteIcon.className = 'ph ph-trash';
+      deleteBtn.appendChild(deleteIcon);
 
       li.append(nameSpan, deleteBtn);
       projectListEl.appendChild(li);
@@ -251,12 +254,18 @@ const createDomController = () => {
       chevronIcon.classList.add('ph', 'ph-caret-right', 'chevron-icon');
 
       if (todo.dueDate) {
-        const dateSpan = document.createElement('span');
-        dateSpan.classList.add('todo-date');
+        const dateBadge = document.createElement('span');
+        dateBadge.classList.add('task-due-date');
+
+        const calendarIcon = document.createElement('i');
+        calendarIcon.className = 'ph ph-calendar-blank';
 
         const parsedDate = parseISO(todo.dueDate);
-        dateSpan.textContent = format(parsedDate, 'dd MMM yyyy');
-        extraInfo.appendChild(dateSpan);
+        const formattedDate = format(parsedDate, 'dd MMM yyyy');
+        const dateText = document.createTextNode(` ${formattedDate}`);
+
+        dateBadge.append(calendarIcon, dateText);
+        extraInfo.appendChild(dateBadge);
       }
 
       const priorityBadge = document.createElement('span');
@@ -265,8 +274,12 @@ const createDomController = () => {
 
       const deleteBtn = document.createElement('button');
       deleteBtn.classList.add('btn-delete-todo');
-      deleteBtn.textContent = 'x';
       deleteBtn.setAttribute('aria-label', 'Delete Task');
+
+      const deleteIcon = document.createElement('i');
+      deleteIcon.className = 'ph ph-trash';
+      deleteBtn.appendChild(deleteIcon);
+
       deleteBtn.addEventListener('click', (e) => {
         e.stopPropagation();
         activeProject.removeTodo(index);
@@ -317,7 +330,8 @@ const createDomController = () => {
     const projectListEl = document.querySelector('#project-list');
     if (projectListEl) {
       projectListEl.addEventListener('click', (e) => {
-        if (e.target.dataset.action === 'delete') {
+        const deleteBtn = e.target.closest('[data-action="delete"]');
+        if (deleteBtn) {
           e.stopPropagation();
           const li = e.target.closest('.project-item');
           if (!li) return;

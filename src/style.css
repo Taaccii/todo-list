@@ -25,9 +25,23 @@
   --border-radius-lg: 14px;
   --border-color: #e2d7c5;
 
-  --shadow-sm: 0 1px 3px rgba(43, 37, 35, 0.05);
-  --shadow-md: 0 4px 8px rgba(43, 37, 35, 0.08);
-  --shadow-lg: 0 10px 20px rgba(43, 37, 35, 0.12);
+  --shadow-color: 20deg 10% 20%;
+  --shadow-sm:
+    0.3px 0.5px 0.7px hsl(var(--shadow-color) / 0.1),
+    0.4px 0.8px 1px -1.2px hsl(var(--shadow-color) / 0.1),
+    1px 2px 2.5px -2.5px hsl(var(--shadow-color) / 0.1);
+  --shadow-md:
+    0.3px 0.5px 0.7px hsl(var(--shadow-color) / 0.11),
+    0.8px 1.6px 2px -0.8px hsl(var(--shadow-color) / 0.11),
+    2.1px 4.1px 5.2px -1.7px hsl(var(--shadow-color) / 0.11),
+    5px 10px 12.5px -2.5px hsl(var(--shadow-color) / 0.11);
+  --shadow-lg:
+    0.3px 0.5px 0.7px hsl(var(--shadow-color) / 0.12),
+    1.5px 3px 3.8px -0.4px hsl(var(--shadow-color) / 0.12),
+    2.8px 5.6px 7px -0.8px hsl(var(--shadow-color) / 0.12),
+    4.6px 9.2px 11.5px -1.2px hsl(var(--shadow-color) / 0.12),
+    7.4px 14.8px 18.5px -1.7px hsl(var(--shadow-color) / 0.12),
+    11.6px 23.2px 29px -2.1px hsl(var(--shadow-color) / 0.12);
 
   --switch-bg: #e2d7c5;
   --switch-thumb: #ffffff;
@@ -56,9 +70,23 @@ html[data-theme="dark"] {
 
   --border-color: #3b3430;
 
-  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.4);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
-  --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.7);
+  --shadow-color: 0deg 0% 0%;
+  --shadow-sm:
+    0.3px 0.5px 0.7px hsl(var(--shadow-color) / 0.25),
+    0.4px 0.8px 1px -1.2px hsl(var(--shadow-color) / 0.25),
+    1px 2px 2.5px -2.5px hsl(var(--shadow-color) / 0.25);
+  --shadow-md:
+    0.3px 0.5px 0.7px hsl(var(--shadow-color) / 0.3),
+    1px 2px 2.5px -0.8px hsl(var(--shadow-color) / 0.3),
+    2.5px 5px 6.3px -1.7px hsl(var(--shadow-color) / 0.3),
+    6px 12px 15px -2.5px hsl(var(--shadow-color) / 0.3);
+  --shadow-lg:
+    0.3px 0.5px 0.7px hsl(var(--shadow-color) / 0.35),
+    1.8px 3.6px 4.5px -0.4px hsl(var(--shadow-color) / 0.35),
+    3.3px 6.6px 8.3px -0.8px hsl(var(--shadow-color) / 0.35),
+    5.5px 11px 13.8px -1.2px hsl(var(--shadow-color) / 0.35),
+    8.8px 17.6px 22px -1.7px hsl(var(--shadow-color) / 0.35),
+    13.8px 27.6px 34.5px -2.1px hsl(var(--shadow-color) / 0.35);
 
   --switch-bg: #3b3430;
   --switch-thumb: #d94136;
@@ -67,10 +95,21 @@ html[data-theme="dark"] {
 
 *, *::before, *::after {
   box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
 }
 
 * {
   margin: 0;
+}
+
+button, 
+input, 
+select, 
+textarea, 
+.todo-card, 
+.project-item {
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
 }
 
 body {
@@ -134,7 +173,7 @@ button {
   justify-content: space-between;
   align-items: center;
   gap: 0.5rem;
-  margin-bottom: 0.5rem;
+  min-height: 38px;
 }
 
 .sidebar-title {
@@ -144,24 +183,6 @@ button {
   text-transform: uppercase;
   color: var(--text-muted);
   padding-left: 0.25rem;
-}
-
-.theme-toggle-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 0.4rem 0.65rem;
-  font-size: 0.85rem;
-  font-weight: 500;
-  color: var(--text-muted);
-  border-radius: var(--border-radius-sm);
-  transition: color 0.15s ease, background-color 0.15s ease;
-  cursor: pointer;
-}
-
-.theme-toggle-btn:hover {
-  color: var(--text-main);
-  background-color: var(--accent-blue-subtle);
 }
 
 .project-list {
@@ -198,21 +219,6 @@ button {
   background-color: var(--accent-blue-light);
   color: var(--accent-blue);
   font-weight: 600;
-}
-
-.btn-delete-project {
-  color: var(--text-muted);
-  font-size: 0.85rem;
-  opacity: 0;
-  transition: opacity 0.15s ease, color 0.15s ease;
-}
-
-.project-item:hover .btn-delete-project {
-  opacity: 1;
-}
-
-.btn-delete-project:hover {
-  color: var(--danger-color);
 }
 
 .inline-form {
@@ -259,34 +265,45 @@ button {
   transform: scale(0.97);
 }
 
-.btn-add-project-mobile {
-  display: none;
+.btn-add-project-mobile,
+.btn-add-task {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 38px;
+  padding: 0 1rem;
   background-color: var(--accent-blue);
   color: var(--btn-text);
-  padding: 0.45rem 1.1rem;
   border-radius: 20px;
   font-size: 0.85rem;
   font-weight: 600;
   box-shadow: var(--shadow-sm);
   transition: background-color 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
+  white-space: nowrap;
 }
 
-.btn-add-project-mobile:hover {
+.btn-add-project-mobile {
+  display: none;
+}
+
+.btn-add-project-mobile:hover,
+.btn-add-task:hover {
   background-color: var(--accent-hover);
   color: var(--btn-text);
   box-shadow: var(--shadow-md);
 }
 
-.btn-add-project-mobile:active {
+.btn-add-project-mobile:active,
+.btn-add-task:active {
   transform: scale(0.97);
 }
 
 .main-content {
   flex: 1;
-  padding: 3rem 4rem;
+  padding: 2rem 4rem;
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1.5rem;
   height: 100vh;
   overflow-y: auto;
   background-color: var(--bg-surface);
@@ -297,15 +314,18 @@ button {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-bottom: 1rem;
-  margin-bottom: 1.5rem;
-  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0;
+  margin-bottom: 0;
+  border-bottom: none;
+  min-height: 38px;
 }
 
 #active-project-title {
   font-size: 2rem;
   font-weight: 700;
   letter-spacing: -0.03em;
+  line-height: 1;
+  margin: 0;
 }
 
 .theme-toggle-btn {
@@ -349,27 +369,6 @@ button {
 
 .theme-toggle-btn.active .toggle-thumb {
   transform: translateX(20px);
-}
-
-.btn-add-task {
-  background-color: var(--accent-blue);
-  color: var(--btn-text);
-  padding: 0.45rem 1.1rem;
-  border-radius: 20px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  box-shadow: var(--shadow-sm);
-  transition: background-color 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
-}
-
-.btn-add-task:hover {
-  background-color: var(--accent-hover);
-  color: var(--btn-text);
-  box-shadow: var(--shadow-md);
-}
-
-.btn-add-task:active {
-  transform: scale(0.97);
 }
 
 .todo-list {
@@ -467,15 +466,51 @@ button {
 .badge-medium { background-color: rgba(212, 158, 53, 0.15); color: var(--priority-medium); }
 .badge-low { background-color: rgba(90, 125, 101, 0.15); color: var(--priority-low); }
 
-.btn-delete-todo {
-  font-size: 1.1rem;
+.btn-delete-todo,
+.btn-delete-project {
+  background: transparent;
+  border: none;
   color: var(--text-muted);
-  line-height: 1;
-  transition: color 0.15s ease;
+  cursor: pointer;
+  padding: 0.3rem;
+  border-radius: var(--border-radius-sm);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  opacity: 0;
+  transition: opacity 0.2s ease, color 0.2s ease, background-color 0.2s ease;
 }
 
-.btn-delete-todo:hover {
+.btn-delete-todo:hover,
+.btn-delete-project:hover {
   color: var(--danger-color);
+  background-color: var(--accent-blue-subtle);
+}
+
+.todo-card:hover .btn-delete-todo,
+.project-item:hover .btn-delete-project {
+  opacity: 1;
+}
+
+.todo-card.expanded .btn-delete-todo {
+  opacity: 1;
+}
+
+.btn-delete-todo i,
+.btn-delete-project i {
+  pointer-events: none;
+}
+
+@media (hover: none) {
+  .btn-delete-todo,
+  .btn-delete-project {
+    opacity: 0.6;
+  }
+
+  .todo-card.expanded .btn-delete-todo {
+    opacity: 1;
+  }
 }
 
 .chevron-icon {
@@ -499,6 +534,25 @@ button {
   transition: max-height 0.25s ease, opacity 0.2s ease, padding 0.25s ease;
   padding: 0 0.75rem;
   background-color: var(--bg-sidebar);
+}
+
+.task-due-date {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.6rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-main);
+  background-color: var(--bg-sidebar);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  white-space: nowrap;
+}
+
+.task-due-date i {
+  font-size: 0.95rem;
+  color: var(--accent-blue);
 }
 
 .todo-card.expanded .todo-details {
@@ -663,6 +717,7 @@ button {
     align-items: center;
     gap: 0.5rem;
     margin-bottom: 1.25rem;
+    min-height: 38px;
   }
 
   .sidebar-title {
@@ -670,8 +725,7 @@ button {
   }
 
   .theme-toggle-btn {
-    padding: 0.45rem 0.75rem;
-    font-size: 0.85rem;
+    padding: 0;
   }
 
   .project-list {
@@ -694,7 +748,7 @@ button {
     display: none;
     width: 100%;
     height: 100vh;
-    padding: 1.5rem 1.25rem;
+    padding: 2rem 1.25rem;
   }
 
   .layout-container.view-todos .sidebar {
@@ -710,8 +764,10 @@ button {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    padding-bottom: 0.5rem;
-    margin-bottom: 1rem;
+    padding-bottom: 0;
+    margin-bottom: 0;
+    border-bottom: none;
+    min-height: 38px;
   }
 
   .btn-back-mobile {
@@ -725,7 +781,7 @@ button {
   }
 
   .btn-add-project-mobile {
-    display: inline-block;
+    display: inline-flex;
   }
 
   #add-project-form {
@@ -734,5 +790,24 @@ button {
 
   #active-project-title {
     font-size: 1.6rem;
+  }
+
+  .todo-card-header {
+    align-items: flex-start;
+  }
+
+  .todo-extra-info {
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.35rem;
+  }
+
+  .task-due-date {
+    font-size: 0.75rem;
+    padding: 0.15rem 0.45rem;
+  }
+
+  .priority-badge {
+    font-size: 0.6rem;
   }
 }
