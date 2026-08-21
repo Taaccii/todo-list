@@ -626,7 +626,6 @@ button {
 .todo-dialog input[type="text"] {
   width: 100%;
   display: block;
-  min-width: 0;
   padding: 0.55rem 0.75rem;
   border: 1px solid var(--border-color);
   border-radius: var(--border-radius-sm);
@@ -652,7 +651,7 @@ button {
 
 .form-row {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+  grid-template-columns: 1fr 1fr;
   gap: 0.75rem;
   width: 100%;
 }
@@ -775,6 +774,11 @@ button {
 
   .project-item.active {
     background-color: var(--accent-blue-light);
+  }
+
+
+  .form-row {
+    grid-template-columns: 1fr;
   }
 
   .main-content {
